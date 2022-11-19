@@ -1,23 +1,5 @@
 @isTest
 public class LWCService_Test {
-    
-    @isTest 
-    private static void TestInit() {
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        FXService mockFX = (FXService)mocks.mock(FXService.class);
-
-        mocks.startStubbing();
-        mocks.when(mockFX.getRate('GBP', 'USD'))
-            .thenReturn(1.5);
-        mocks.stopStubbing();
-
-        // Test
-        LWCService.fxService = mockFX;
-
-        // Assert
-        System.assertEquals(1.5, LWCService.fxService.getRate('GBP', 'USD'));
-    }
 
     @isTest
     private static void ThenReturn_Test() {
@@ -49,8 +31,8 @@ public class LWCService_Test {
 
         mocks.startStubbing();
         mocks.when(mockFX.getRate('Wibble', 'USD'))
-            .thenThrow(new BadRequest400Exception(
-                'Currency arguments must be currency iso codes'
+            .thenThrow(new ServerError500Exception(
+                'Something bad happened'
             ));
         mocks.stopStubbing();
 
@@ -60,7 +42,9 @@ public class LWCService_Test {
 
         // Assert
         System.assertEquals(false, result.isSuccess);
-        System.assertEquals('Currency arguments must be currency iso codes', result.message);
+        // A user-readable message is sent back to the UI
+        // NOT the stack trace or message from the Exception.
+        System.assertEquals(Label.UserReadableMessage, result.message);
     }
 
     @isTest
@@ -85,7 +69,8 @@ public class LWCService_Test {
 
         // Assert
         System.assertEquals(false, response.isSuccess);
-        System.assertEquals('We would politely like to inform you that our FX api has gone to s%@t', response.message);
+        System.assertEquals(Label.UserReadableMessage, response.message);
+        // Confirm the retry mechanism really did try 3 times.
         ((FXService)mocks.verify(mockFX, 3)).getRate('GBP', 'USD');
     }
 
@@ -98,10 +83,12 @@ public class LWCService_Test {
 
         mocks.startStubbing();
         mocks.when(mockFX.getRate('GBP', 'USD'))
+            // First 2 attempts fail
             .thenThrowMulti(new List<Exception>{
                 new ServerError500Exception('Argh!'),
                 new ServerError500Exception('Yikes!')
             })
+            // But the final retry succeeds
             .thenReturn(1.5);
         mocks.stopStubbing();
 
@@ -142,77 +129,5 @@ public class LWCService_Test {
         // Assert
         ((Logger)mocks.verify(mockLogger, 3)).log('Argh!');
         ((Emailer)mocks.verify(mockEmailer, 1)).notifyAdmins();
-    }
-
-    @isTest
-    private static void ThenReturn_Anything() {
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        FXService mockFX = (FXService)mocks.mock(FXService.class);
-
-        mocks.startStubbing();
-        mocks.when(mockFX.getRates())
-            .thenReturn(new List<Decimal>{1, 2, 3 });
-        mocks.stopStubbing();
-
-        // Test
-        List<Decimal> result = mockFX.getRates();
-
-        // Assert
-        System.assertEquals(1, result[0]);
-        System.assertEquals(2, result[1]);
-        System.assertEquals(3, result[2]);
-    }
-
-    @isTest
-    private static void NullMatchingParameter_Test() {
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        FXService mockFX = (FXService)mocks.mock(FXService.class);
-
-        mocks.startStubbing();
-        mocks.when(mockFX.getRate(null, 'GBP'))
-            .thenThrow(new BadRequest400Exception('Invalid Parameter'));
-        mocks.stopStubbing();
-
-        // Test
-        try {
-            mockFX.getRate(null, 'GBP');
-            System.assert(false, 'Should have thrown');
-        } catch(BadRequest400Exception ex400) {
-            System.assertEquals('Invalid Parameter', ex400.getMessage());
-        }
-    }
-
-    @isTest
-    private static void MustHaveAttachedAnswer() {
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        FXService mockFX = (FXService)mocks.mock(FXService.class);
-
-        mocks.startStubbing();
-        mocks.when(mockFX.getRate('GBP', 'USD'));
-        mocks.stopStubbing();
-
-        // Throws exception
-        mockFX.getRate('GBP', 'USD');
-    }
-
-    @isTest
-    private static void MultiMethodsExceptionThrownIfNull() {
-
-        fflib_ApexMocks mocks = new fflib_ApexMocks();
-        FXService mockFX = (FXService)mocks.mock(FXService.class);
-
-        try {
-
-            mocks.startStubbing();
-            mocks.when(mockFX.getRate('GBP', 'USD'))
-                .thenThrowMulti(null);
-            mocks.stopStubbing();
-
-        } catch(fflib_ApexMocks.ApexMocksException ex) {
-            System.assert(true);
-        }
     }
 }

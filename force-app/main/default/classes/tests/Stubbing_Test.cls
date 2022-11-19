@@ -164,7 +164,6 @@ public class Stubbing_Test {
         }
     }
 
-    // TODO: Change to email notifier.
     @isTest
     private static void doThrowWhen_Example() {
 
@@ -230,8 +229,12 @@ public class Stubbing_Test {
         }
     }
 
+    //---------------------------------------------------------------
+    // Gotchas and further details
+    //---------------------------------------------------------------
+
     @isTest
-    private static void unstubbedMethdsReturnNull() {
+    private static void unstubbedMethodsReturnNull() {
 
         // Setup
         fflib_ApexMocks mocks = new fflib_ApexMocks();
@@ -242,8 +245,6 @@ public class Stubbing_Test {
 
         // Test
         Decimal result = mockApi.getLatestRate('GBP', 'USD');
-        // TODO: Or could show that different arguments would not be
-        // matched by any of the stubs, and so would return null.
 
         // Assert
         System.assertEquals(null, result);
@@ -259,6 +260,7 @@ public class Stubbing_Test {
 
         // Stubbing
         mocks.startStubbing();
+        // Explictly returning null is for thenReturn()
         mocks.when(mockApi.getLatestRate('GBP', 'USD')).thenReturn(null);
         mocks.stopStubbing();
 
@@ -280,6 +282,8 @@ public class Stubbing_Test {
         // Stubbing will throw an exception
         mocks.startStubbing();
         try {
+            // However thenReturnMulti() and thenThrowMulti() can't
+            // have null as an argument.
             mocks.when(mockApi.getLatestRate('GBP', 'USD')).thenReturnMulti(null);
             System.assert(false, 'Should have thrown an exception.');
         } catch(Exception ex) {
@@ -299,6 +303,8 @@ public class Stubbing_Test {
         // Stubbing will throw an exception
         mocks.startStubbing();
         try {
+            // Nor can thenReturnMulti() and thenThrowMulti()
+            // be passed an empty list.
             mocks.when(mockApi.getLatestRate('GBP', 'USD'))
                 .thenReturnMulti(new List<Decimal>());
             System.assert(false, 'Should have thrown an exception.');
@@ -349,5 +355,26 @@ public class Stubbing_Test {
 
         // Assert
         System.assertEquals(1.5, result);
+    }
+
+    @isTest
+    private static void MustHaveAttachedAnswer() {
+
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        FXService mockFX = (FXService)mocks.mock(FXService.class);
+
+        mocks.startStubbing();
+        // Oops! Forgot to set up a response when stubbing this method
+        mocks.when(mockFX.getRate('GBP', 'USD'));
+        mocks.stopStubbing();
+
+        
+        try {
+            // Throws exception
+            mockFX.getRate('GBP', 'USD');
+            System.assert(false, 'Should have thrown an exception here');
+        } catch(fflib_ApexMocks.ApexMocksException ex) {
+            System.assert(true);
+        }
     }
 }
