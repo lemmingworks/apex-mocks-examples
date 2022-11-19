@@ -1,0 +1,20 @@
+{
+  "name": "joelemmer-apexmocks-examples",
+  "author": {
+    "name": "Joe Lemmer",
+    "url": "https://www.linkedin.com/in/joe-lemmer/"
+  },
+  "private": true,
+  "version": "1.0.0",
+  "description": "Salesforce SFDX project containing ApexMocks examples",
+  "keywords": [
+    "Salesforce",
+    "ApexMocks",
+    "Apex"
+  ],
+  "homepage": "https://github.com/lemmingworks/joelemmer-apexmocks-examples#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lemmingworks/joelemmer-apexmocks-examples.git"
+  }
+}
