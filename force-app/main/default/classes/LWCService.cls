@@ -17,15 +17,18 @@ public with sharing class LWCService {
         public Boolean isSuccess {get;set;}
         public String message {get;set;}
         public Object data {get;set;}
+
+        public Response() {
+            this.isSuccess = false;
+        }
     }
 
     @AuraEnabled
     public static Response GetFXRate(String fromCurr, String toCurr) {
 
-        Integer maxRetries = 3;
         Response response = new Response();
-        response.isSuccess = false;
-
+        
+        Integer maxRetries = 3;
         Integer retryCount = 0;
         while(!response.isSuccess && retryCount < maxRetries) {
             try {
