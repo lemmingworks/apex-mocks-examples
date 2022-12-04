@@ -33,6 +33,6 @@ sfdx force:source:push
 - [Mocking Salesforce Apex Methods with ApexMocks Verify](https://www.joelemmer.com/mocking-salesforce-apex-methods-with-apexmocks-verify/)
 
 ### Matchers
-- [ApexMocks String Matchers Cookbook](https://www.joelemmer.com/apexmocks-string-matchers-cookbook/)
-- [ApexMocks Number Matchers Cookbook](https://www.joelemmer.com/apexmocks-number-matchers-cookbook/)
-- [ApexMocks Date and Datetime Matchers Cookbook](https://www.joelemmer.com/apexmocks-date-and-time-matchers-cookbook/)
+- [ApexMocks String Matching Methods](https://www.joelemmer.com/apexmocks-string-matching-methods/)
+- [ApexMocks Number Matching Methods](https://www.joelemmer.com/apexmocks-number-matching-methods/)
+- [ApexMocks Date and Datetime Matching Methods](https://www.joelemmer.com/apexmocks-date-and-time-matching-methods/)
