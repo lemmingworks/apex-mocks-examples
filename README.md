@@ -23,7 +23,7 @@ sfdx force:source:push
 
 ## Documentation and blog posts on [joelemmer.com](https://www.joelemmer.com)
 
-### Developer Guides
+### Developer Guide
 - [Simplifying Apex unit test setup using mocking - a real-world example](https://www.joelemmer.com/using-mocking-in-salesforce-unit-tests)
 
 ### Stubbing
